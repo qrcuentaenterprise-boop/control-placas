@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha del Vehículo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+    .card { background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 420px; overflow: hidden; }
+    .card-header { background: #1a365d; color: #ffffff; padding: 24px 20px; text-align: center; }
+    .card-header h1 { font-size: 28px; letter-spacing: 1px; margin-top: 5px; }
+    .card-header span { font-size: 13px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1.5px; }
+    .card-body { padding: 24px 20px; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #edf2f7; }
+    .info-row:last-child { border-bottom: none; }
+    .label { font-weight: 600; color: #4a5568; font-size: 14px; }
+    .value { font-weight: 700; color: #2d3748; font-size: 16px; text-align: right; }
+    .status-badge { display: inline-block; background-color: #c6f6d5; color: #22543d; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 10px; }
+    .error-msg { text-align: center; color: #e53e3e; padding: 30px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="tarjeta">
+    <div class="card-header">
+      <span>Ficha de Control Vehicular</span>
+      <h1 id="placa">Cargando...</h1>
+      <div class="status-badge">Activo</div>
+    </div>
+    <div class="card-body">
+      <div class="info-row">
+        <span class="label">Modelo / Tipo:</span>
+        <span class="value" id="modelo">--</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Color:</span>
+        <span class="value" id="color">--</span>
+      </div>
+      <div class="info-row">
+        <span class="label">N° de Unidad:</span>
+        <span class="value" id="unidad">--</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Organización:</span>
+        <span class="value" id="fpmr">--</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Obtener la placa desde el enlace de la URL (ejemplo: ?placa=P-576KHZ)
+    const parametros = new URLSearchParams(window.location.search);
+    const placaBuscada = parametros.get('placa');
+
+    // Leer el archivo de datos JSON
+    fetch('datos_placas.json')
+      .then(respuesta => respuesta.json())
+      .then(datos => {
+        if (placaBuscada && datos[placaBuscada]) {
+          const vehiculo = datos[placaBuscada];
+          document.getElementById('placa').textContent = vehiculo.placa;
+          document.getElementById('modelo').textContent = vehiculo.modelo;
+          document.getElementById('color').textContent = vehiculo.color;
+          document.getElementById('unidad').textContent = vehiculo.unidad;
+          document.getElementById('fpmr').textContent = vehiculo.fpmr;
+        } else {
+          document.getElementById('tarjeta').innerHTML = '<div class="error-msg">❌ Vehículo o placa no encontrada en el sistema.</div>';
+        }
+      })
+      .catch(() => {
+        document.getElementById('tarjeta').innerHTML = '<div class="error-msg">⚠️ Error al cargar los datos del vehículo.</div>';
+      });
+  </script>
+</body>
+</html>
